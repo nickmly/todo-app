@@ -31,8 +31,9 @@ hr {
     padding: 20px;
     color: gray;
     background: none;
-    width: 80vw;
+    width: 70vw;
     margin-top: 10px;
+    font-size: 1.1em;
 }
 
 ul {
@@ -52,4 +53,9 @@ ul li {
 ul li:hover {
     background-color: #d7dee0;
     transform: scale(1.02,1.02);
+}
+.error {
+    background-color: rgb(201, 85, 85);
+    padding: 10px;
+    color: #e8edee;
 }
