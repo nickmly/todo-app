@@ -2,31 +2,52 @@ $(document).ready(function(){
     $.getJSON("/api/todos").then(function(data){
         addTodos(data);
     }).catch(handleError);
-
-    $("#todoInput").keypress(function(event) {
-        if(event.which == 13) { // if enter pressed
-            createTodo();
-        }
-    });
 });
 
-function createTodo(){
-    var todoName = $("#todoInput").val();
-    $.post("/api/todos", {name: todoName}).then(function(data){
-        console.log(data);
+$("#todoInput").keypress(function(event) {
+    if(event.which == 13) { // if enter pressed
+        createTodo();
+    }
+});
+
+// listen for clicks on spans that are inside the list class
+// have to do this because when this function runs there are no spans on the page yet
+$(".list").on("click", "span", function(){    
+    deleteTodo($(this).parent());
+});
+
+function deleteTodo(todo){    
+    var todoID = todo.data("id"); // Retrieve the ID from the list item
+    $.ajax({
+        method: "DELETE",
+        url: "/api/todos/" + todoID
+    }).then(function(data){
+        todo.remove();    
     }).catch(handleError);
 }
 
 
+function createTodo(){
+    var todoName = $("#todoInput").val();
+    $.post("/api/todos", {name: todoName}).then(function(data){
+        addSingleTodo(data);
+        $("#todoInput").val("");
+    }).catch(handleError);
+}
+
 function addTodos(todos){
     todos.forEach(function(element) {
-        var newTodo = $("<li>" + element.name + "</li>");
-        if(element.completed){
-            newTodo.addClass("done");
-        }
-        $("ul").append(newTodo);
+        addSingleTodo(element);
     });
-    
+}
+
+function addSingleTodo(todo){
+    var newTodo = $("<li>" + todo.name + "<span>X</span></li>");
+    newTodo.data("id", todo._id); // hidden data attribute
+    if(todo.completed){
+        newTodo.addClass("done");
+    }
+    $("ul").append(newTodo);
 }
 
 function handleError(err){
