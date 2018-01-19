@@ -16,6 +16,26 @@ $(".list").on("click", "span", function(){
     deleteTodo($(this).parent());
 });
 
+$(".list").on("click", "li", function(event){
+    event.stopPropagation();
+    completeTodo($(this));
+});
+
+function completeTodo(todo){
+    var todoID = todo.data("id");
+    var todoCompleted = todo.data("completed");
+    $.ajax({
+        method: "PUT",
+        url: "/api/todos/" + todoID,
+        data: {
+            completed: !todoCompleted
+        }
+    }).then(function(data){
+        todo.toggleClass("done");
+        todo.data("completed", !todoCompleted);
+    }).catch(handleError);
+}
+
 function deleteTodo(todo){    
     var todoID = todo.data("id"); // Retrieve the ID from the list item
     $.ajax({
@@ -44,6 +64,7 @@ function addTodos(todos){
 function addSingleTodo(todo){
     var newTodo = $("<li>" + todo.name + "<span>X</span></li>");
     newTodo.data("id", todo._id); // hidden data attribute
+    newTodo.data("completed", todo.completed);
     if(todo.completed){
         newTodo.addClass("done");
     }
